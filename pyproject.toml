@@ -11,6 +11,7 @@ django = "4.1.2"
 djangorestframework = "^3.14.0"
 psycopg2 = "^2.9.5"
 dj-rest-auth = {extras = ["with-social"], version = "^2.2.6"}
+djangorestframework-simplejwt = "^5.2.2"
 
 
 [build-system]
