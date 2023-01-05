@@ -81,13 +81,13 @@ WSGI_APPLICATION = "config.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': "family-budget",
-        'USER': "family-budget",
-        'PASSWORD': "family-budget",
-        'HOST': "db",
-        'PORT': 5432,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "family-budget",
+        "USER": "family-budget",
+        "PASSWORD": "family-budget",
+        "HOST": "db",
+        "PORT": 5432,
     }
 }
 
@@ -136,6 +136,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SITE_ID = 1
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10
 }
