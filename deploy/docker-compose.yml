@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./deploy/Dockerfile
+    image: backend:latest
+    restart: always
+    volumes:
+    - .:/app/src/
+    ports:
+    - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:14.5-bullseye
+    hostname: family-budget-db
+    environment:
+      POSTGRES_PASSWORD: "family-budget"
+      POSTGRES_USER: "family-budget"
+      POSTGRES_DB: "family-budget"
+    volumes:
+      - family-budget-db-data:/var/lib/postgresql/data
+    ports:
+    - "5432:5432"
+    restart: always
+    healthcheck:
+      test: pg_isready -U family-budget
+      interval: 2s
+      timeout: 3s
+      retries: 40
+
+volumes:
+  family-budget-db-data:
+    name: family-budget-db-data
