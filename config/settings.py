@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "dj_rest_auth.registration",
+
+    "budget_list",
 ]
 
 MIDDLEWARE = [
