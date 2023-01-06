@@ -7,7 +7,7 @@ class Category(models.Model):
 
 
 class BudgetList(models.Model):
-    participants = models.ManyToManyField(User, related_name='+')
+    participants = models.ManyToManyField(User, related_name='+', blank=True)
 
 
 class Budget(models.Model):
