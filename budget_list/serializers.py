@@ -1,28 +1,48 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from budget_list.models import BudgetList, Budget, Income, Expense
+from budget_list.models import BudgetList, Budget, Income, Expense, Category
 
 
-class ExpenseSerializer(serializers.ModelSerializer):
+class IncomeExpenseBaseSerializer(serializers.ModelSerializer):
+    category = serializers.CharField(max_length=50, write_only=True)
 
     class Meta:
         model = Expense
         fields = "__all__"
 
+    def _get_category_object(self, category_name):
+        try:
+            category = Category.objects.get(name=category_name)
+        except Category.DoesNotExist:
+            category = Category.objects.create(name=category_name)
+        return category
 
-class IncomeSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Income
-        fields = "__all__"
+class ExpenseSerializer(IncomeExpenseBaseSerializer):
+    def create(self, validated_data):
+        category_name = validated_data.pop("category")
+        category = super()._get_category_object(category_name)
+        expense = Expense.objects.create(category=category, **validated_data)
+        return expense
+
+
+class IncomeSerializer(IncomeExpenseBaseSerializer):
+    def create(self, validated_data):
+        category_name = validated_data.pop("category")
+        category = super()._get_category_object(category_name)
+        income = Income.objects.create(category=category, **validated_data)
+        return income
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+    incomes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    expenses = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    budget_list = serializers.PrimaryKeyRelatedField(queryset=BudgetList.objects.all())
 
     class Meta:
         model = Budget
-        fields = "__all__"
+        fields = ["name", "budget_list", "incomes", "expenses"]
 
 
 class BudgetListSerializer(serializers.ModelSerializer):
