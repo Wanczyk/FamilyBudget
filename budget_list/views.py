@@ -1,12 +1,16 @@
 from rest_framework import viewsets
 
+from budget_list.permissions import IsParticipant
 from budget_list.models import BudgetList, Budget, Income, Expense
 from budget_list.serializers import BudgetListSerializer, BudgetSerializer, IncomeSerializer, ExpenseSerializer
 
 
 class BudgetListViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsParticipant]
     serializer_class = BudgetListSerializer
-    queryset = BudgetList.objects.all()
+
+    def get_queryset(self, *args, **kwargs):
+        return BudgetList.objects.all().filter(participants__in=[self.request.user])
 
     def perform_create(self, serializer):
         participants = serializer.validated_data["participants"]
