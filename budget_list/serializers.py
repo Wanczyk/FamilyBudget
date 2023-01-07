@@ -5,11 +5,12 @@ from budget_list.models import BudgetList, Budget, Income, Expense, Category
 
 
 class IncomeExpenseBaseSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     category = serializers.CharField(max_length=50, write_only=True)
 
     class Meta:
         model = Expense
-        fields = "__all__"
+        fields = ["id", "category", "name", "amount", "budget"]
 
     def _get_category_object(self, category_name):
         try:
@@ -36,13 +37,14 @@ class IncomeSerializer(IncomeExpenseBaseSerializer):
 
 
 class BudgetSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
     incomes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     expenses = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     budget_list = serializers.PrimaryKeyRelatedField(queryset=BudgetList.objects.all())
 
     class Meta:
         model = Budget
-        fields = ["name", "budget_list", "incomes", "expenses"]
+        fields = ["id", "name", "budget_list", "incomes", "expenses"]
 
 
 class BudgetListSerializer(serializers.ModelSerializer):
