@@ -22,6 +22,7 @@ class BudgetListViewSet(viewsets.ModelViewSet):
 
 
 class BudgetViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsParticipant]
     serializer_class = BudgetSerializer
     queryset = Budget.objects.all()
 
@@ -36,6 +37,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsParticipant]
     serializer_class = IncomeSerializer
     queryset = Income.objects.all()
 
@@ -46,6 +48,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsParticipant]
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
 
