@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, generics, status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from budget_list.permissions import IsParticipant, HasBudgetlistPermission
@@ -37,22 +38,50 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
         return Response(data=serializer.data)
 
+    def get_queryset(self, *args, **kwargs):
+        return Budget.objects.all().order_by('id').filter(budget_list__participants__in=[self.request.user])
 
-class IncomeViewSet(viewsets.ModelViewSet):
+
+class IncomeViewSet(viewsets.ViewSet):
     permission_classes = [HasBudgetlistPermission]
     serializer_class = IncomeSerializer
     queryset = Income.objects.all()
+
+    def list(self, request, budgetlist_pk=None, budget_pk=None):
+        queryset = Income.objects.filter(budget__budget_list=budgetlist_pk, budget=budget_pk)
+        serializer = IncomeSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None, budgetlist_pk=None, budget_pk=None):
+        queryset = Income.objects.filter(pk=pk, budget=budget_pk, budget__budget_list=budgetlist_pk)
+        income = get_object_or_404(queryset, pk=pk)
+        serializer = IncomeSerializer(income)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, IncomeSerializer)
 
         return Response(data=serialized_data)
 
+    def get_queryset(self, *args, **kwargs):
+        return Income.objects.all().order_by('id').filter(budget__budget_list__participants__in=[self.request.user])
 
-class ExpenseViewSet(viewsets.ModelViewSet):
+
+class ExpenseViewSet(viewsets.ViewSet):
     permission_classes = [HasBudgetlistPermission]
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
+
+    def list(self, request, budgetlist_pk=None, budget_pk=None):
+        queryset = Expense.objects.filter(budget__budget_list=budgetlist_pk, budget=budget_pk)
+        serializer = ExpenseSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None, budgetlist_pk=None, budget_pk=None):
+        queryset = Expense.objects.filter(pk=pk, budget=budget_pk, budget__budget_list=budgetlist_pk)
+        expense = get_object_or_404(queryset, pk=pk)
+        serializer = ExpenseSerializer(expense)
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, ExpenseSerializer)
