@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 
-from budget_list.permissions import IsParticipant
+from budget_list.permissions import IsParticipant, HasBudgetlistPermission
 from budget_list.models import BudgetList, Budget, Income, Expense
 from budget_list.serializers import BudgetListSerializer, BudgetSerializer, IncomeSerializer, ExpenseSerializer, \
     BudgetListAddParticipantSerializer
@@ -24,7 +24,7 @@ class BudgetListViewSet(viewsets.ModelViewSet):
 
 
 class BudgetViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsParticipant]
+    permission_classes = [HasBudgetlistPermission]
     serializer_class = BudgetSerializer
     queryset = Budget.objects.all()
 
@@ -39,7 +39,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsParticipant]
+    permission_classes = [HasBudgetlistPermission]
     serializer_class = IncomeSerializer
     queryset = Income.objects.all()
 
@@ -50,7 +50,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
 
 
 class ExpenseViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsParticipant]
+    permission_classes = [HasBudgetlistPermission]
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
 
@@ -61,15 +61,22 @@ class ExpenseViewSet(viewsets.ModelViewSet):
 
 
 class BudgetListAddParticipantViewSet(generics.CreateAPIView):
-    permission_classes = [IsParticipant]
+    permission_classes = [HasBudgetlistPermission]
     serializer_class = BudgetListAddParticipantSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = BudgetListAddParticipantSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = User.objects.get(username=serializer.validated_data["username"])
-        budget_list = BudgetList.objects.get(id=self.kwargs["pk"])
+        try:
+            user = User.objects.get(username=serializer.validated_data["username"])
+        except User.DoesNotExist:
+            return Response("User not found", status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            budget_list = BudgetList.objects.get(id=self.kwargs["pk"])
+        except BudgetList.DoesNotExist:
+            return Response("Budget not found", status=status.HTTP_404_NOT_FOUND)
 
         if user in budget_list.participants.all():
             return Response("User already a participant", status=status.HTTP_409_CONFLICT)
