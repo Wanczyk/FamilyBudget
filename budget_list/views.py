@@ -1,9 +1,11 @@
-from rest_framework import viewsets
+from django.contrib.auth.models import User
+from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 
 from budget_list.permissions import IsParticipant
 from budget_list.models import BudgetList, Budget, Income, Expense
-from budget_list.serializers import BudgetListSerializer, BudgetSerializer, IncomeSerializer, ExpenseSerializer
+from budget_list.serializers import BudgetListSerializer, BudgetSerializer, IncomeSerializer, ExpenseSerializer, \
+    BudgetListAddParticipantSerializer
 from budget_list.utils import create_income_expense
 
 
@@ -56,3 +58,25 @@ class ExpenseViewSet(viewsets.ModelViewSet):
         serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, ExpenseSerializer)
 
         return Response(data=serialized_data)
+
+
+class BudgetListAddParticipantViewSet(generics.CreateAPIView):
+    permission_classes = [IsParticipant]
+    serializer_class = BudgetListAddParticipantSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = BudgetListAddParticipantSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = User.objects.get(username=serializer.validated_data["username"])
+        budget_list = BudgetList.objects.get(id=self.kwargs["pk"])
+
+        if user in budget_list.participants.all():
+            return Response("User already a participant", status=status.HTTP_409_CONFLICT)
+
+        budget_list.participants.add(user)
+        budget_list.save()
+
+        return Response("User added", status=status.HTTP_200_OK)
+
+

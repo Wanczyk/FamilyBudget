@@ -19,4 +19,5 @@ urlpatterns = [
     path(r'', include(router.urls)),
     path(r'', include(budgetlist_router.urls)),
     path(r'', include(budget_router.urls)),
+    path("budgetlists/<int:pk>/add-participant/", views.BudgetListAddParticipantViewSet.as_view())
 ]

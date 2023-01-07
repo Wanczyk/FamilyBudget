@@ -69,3 +69,10 @@ class BudgetListSerializer(serializers.ModelSerializer):
     class Meta:
         model = BudgetList
         fields = ["id", "participants", "budgets"]
+
+
+class BudgetListAddParticipantSerializer(serializers.Serializer):
+    username = serializers.CharField(write_only=True)
+
+    class Meta:
+        fields = ["username"]
