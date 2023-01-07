@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets, generics, status
+from rest_framework import viewsets, generics, status, permissions
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
@@ -11,7 +11,7 @@ from budget_list.utils import create_income_expense
 
 
 class BudgetListViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsParticipant]
+    permission_classes = [permissions.IsAuthenticated, IsParticipant]
     serializer_class = BudgetListSerializer
 
     def get_queryset(self, *args, **kwargs):
@@ -25,7 +25,7 @@ class BudgetListViewSet(viewsets.ModelViewSet):
 
 
 class BudgetViewSet(viewsets.ModelViewSet):
-    permission_classes = [HasBudgetlistPermission]
+    permission_classes = [permissions.IsAuthenticated, HasBudgetlistPermission]
     serializer_class = BudgetSerializer
     queryset = Budget.objects.all()
 
@@ -43,7 +43,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
 
 
 class IncomeViewSet(viewsets.ViewSet):
-    permission_classes = [HasBudgetlistPermission]
+    permission_classes = [permissions.IsAuthenticated, HasBudgetlistPermission]
     serializer_class = IncomeSerializer
     queryset = Income.objects.all()
 
@@ -68,7 +68,7 @@ class IncomeViewSet(viewsets.ViewSet):
 
 
 class ExpenseViewSet(viewsets.ViewSet):
-    permission_classes = [HasBudgetlistPermission]
+    permission_classes = [permissions.IsAuthenticated, HasBudgetlistPermission]
     serializer_class = ExpenseSerializer
     queryset = Expense.objects.all()
 
@@ -90,7 +90,7 @@ class ExpenseViewSet(viewsets.ViewSet):
 
 
 class BudgetListAddParticipantViewSet(generics.CreateAPIView):
-    permission_classes = [HasBudgetlistPermission]
+    permission_classes = [permissions.IsAuthenticated, HasBudgetlistPermission]
     serializer_class = BudgetListAddParticipantSerializer
 
     def create(self, request, *args, **kwargs):
