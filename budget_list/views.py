@@ -12,7 +12,7 @@ class BudgetListViewSet(viewsets.ModelViewSet):
     serializer_class = BudgetListSerializer
 
     def get_queryset(self, *args, **kwargs):
-        return BudgetList.objects.all().filter(participants__in=[self.request.user])
+        return BudgetList.objects.all().order_by('id').filter(participants__in=[self.request.user])
 
     def perform_create(self, serializer):
         participants = serializer.validated_data["participants"]
