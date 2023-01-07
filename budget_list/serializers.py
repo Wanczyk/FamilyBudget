@@ -19,6 +19,20 @@ class IncomeExpenseBaseSerializer(serializers.ModelSerializer):
             category = Category.objects.create(name=category_name)
         return category
 
+    def update(self, instance, validated_data):
+        category_name = validated_data.pop("category")
+        category = self._get_category_object(category_name)
+
+        instance.category = category
+        instance.name = validated_data.get('name', instance.name)
+        instance.amount = validated_data.get('amount', instance.amount)
+        instance.save()
+        return instance
+
+    def to_representation(self, obj):
+        self.fields['category'] = serializers.StringRelatedField(read_only=True)
+        return super().to_representation(obj)
+
 
 class ExpenseSerializer(IncomeExpenseBaseSerializer):
     def create(self, validated_data):
