@@ -42,7 +42,7 @@ class IncomeViewSet(viewsets.ModelViewSet):
     queryset = Income.objects.all()
 
     def create(self, request, *args, **kwargs):
-        serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data)
+        serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, IncomeSerializer)
 
         return Response(data=serialized_data)
 
@@ -53,6 +53,6 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     queryset = Expense.objects.all()
 
     def create(self, request, *args, **kwargs):
-        serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data)
+        serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, ExpenseSerializer)
 
         return Response(data=serialized_data)

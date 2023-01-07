@@ -1,9 +1,6 @@
-from budget_list.serializers import ExpenseSerializer
-
-
-def create_income_expense(budget_pk, request_data):
+def create_income_expense(budget_pk, request_data, serializer_class):
     request_data["budget"] = budget_pk
-    serializer = ExpenseSerializer(data=request_data)
+    serializer = serializer_class(data=request_data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
