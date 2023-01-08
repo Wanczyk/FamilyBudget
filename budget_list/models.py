@@ -10,11 +10,13 @@ class Category(models.Model):
 
 
 class BudgetList(models.Model):
-    participants = models.ManyToManyField(User, related_name='+', blank=True)
+    participants = models.ManyToManyField(User, related_name="+", blank=True)
 
 
 class Budget(models.Model):
-    budget_list = models.ForeignKey(BudgetList, on_delete=models.CASCADE, related_name="budgets")
+    budget_list = models.ForeignKey(
+        BudgetList, on_delete=models.CASCADE, related_name="budgets"
+    )
     name = models.CharField(max_length=50)
 
 
@@ -26,7 +28,9 @@ class Income(models.Model):
 
 
 class Expense(models.Model):
-    budget = models.ForeignKey(Budget, on_delete=models.CASCADE, related_name="expenses")
+    budget = models.ForeignKey(
+        Budget, on_delete=models.CASCADE, related_name="expenses"
+    )
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     amount = models.DecimalField(decimal_places=2, max_digits=6)
