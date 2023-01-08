@@ -36,7 +36,7 @@ class BudgetViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(data=serializer.data)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self, *args, **kwargs):
         return Budget.objects.all().order_by('id').filter(budget_list__participants__in=[self.request.user])
@@ -61,7 +61,7 @@ class IncomeViewSet(viewsets.ViewSet):
     def create(self, request, *args, **kwargs):
         serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, IncomeSerializer)
 
-        return Response(data=serialized_data)
+        return Response(data=serialized_data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self, *args, **kwargs):
         return Income.objects.all().order_by('id').filter(budget__budget_list__participants__in=[self.request.user])
@@ -86,7 +86,7 @@ class ExpenseViewSet(viewsets.ViewSet):
     def create(self, request, *args, **kwargs):
         serialized_data = create_income_expense(int(kwargs["budget_pk"]), request.data, ExpenseSerializer)
 
-        return Response(data=serialized_data)
+        return Response(data=serialized_data, status=status.HTTP_201_CREATED)
 
 
 class BudgetListAddParticipantViewSet(generics.CreateAPIView):
